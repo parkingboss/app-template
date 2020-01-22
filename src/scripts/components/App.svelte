@@ -1,0 +1,3 @@
+<main>
+  It lives!
+</main>
