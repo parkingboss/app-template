@@ -3,64 +3,85 @@ import commonjs from '@rollup/plugin-commonjs';
 import svelte from 'rollup-plugin-svelte';
 import livereload from 'rollup-plugin-livereload';
 import { terser } from 'rollup-plugin-terser';
-import copy from "rollup-plugin-copy";
+import copy from 'rollup-plugin-copy';
+import getPort from 'get-port';
 
 const production = !process.env.ROLLUP_WATCH;
 
-export default {
-	input: 'src/scripts/app.js',
+async function getConfig() {
+  return {
+    input: 'src/scripts/app.js',
 
-	output: {
-		sourcemap: true,
-		format: 'iife',
-		name: 'app',
-		file: 'public/app.js'
-	},
+    output: {
+      sourcemap: true,
+      format: 'iife',
+      name: 'app',
+      file: 'public/app.js'
+    },
 
-	plugins: [
-		svelte({
-			dev: !production,
-		}),
+    plugins: [
+      replace({
+        DEV: JSON.stringify(!production),
+        PROD: JSON.stringify(production)
+      }),
 
-		resolve({
-			browser: true,
-			dedupe: importee => importee === 'svelte' || importee.startsWith('svelte/')
-		}),
+      svelte({
+        dev: !production
+      }),
 
-		commonjs(),
+      resolve({
+        browser: true,
+        dedupe: importee =>
+          importee === 'svelte' || importee.startsWith('svelte/')
+      }),
 
-		copy({
-			targets: [
-				{ src: 'src/index.html', dest: 'public' },
-				{ src: 'src/assets/**/*', dest: 'public' },
-			]
-		}),
+      commonjs(),
 
-		!production && serve(),
+      watchAssets({ assets: ['src/index.html', 'src/assets/*', 'src/assets/**/*'] }),
 
-		!production && livereload('public'),
+      copy({
+        targets: [
+          { src: 'src/index.html', dest: 'public' },
+          { src: 'src/assets/**/*', dest: 'public' }
+        ]
+      }),
 
-		production && terser()
-	],
+      !production && serve(),
 
-	watch: {
-		clearScreen: false
-	}
-};
+      !production && livereload({
+        name: 'public',
+        port: await getPort(),
+        exclusions: ['./rollup.config.js']
+      }),
 
-function serve() {
-	let started = false;
+      production && terser()
+    ],
 
-	return {
-		writeBundle() {
-			if (!started) {
-				started = true;
+    watch: {
+      clearScreen: false
+    }
+  };
 
-				require('child_process').spawn('npm', ['run', 'start', '--', '--dev'], {
-					stdio: ['ignore', 'inherit', 'inherit'],
-					shell: true
-				});
-			}
-		}
-	};
+  function serve() {
+    let started = false;
+
+    return {
+      writeBundle() {
+        if (!started) {
+          started = true;
+
+          require('child_process').spawn(
+            'npm',
+            ['run', 'start', '--', '--dev'],
+            {
+              stdio: ['ignore', 'inherit', 'inherit'],
+              shell: true
+            }
+          );
+        }
+      }
+    };
+  }
 }
+
+export default getConfig();
