@@ -20,6 +20,11 @@ async function getConfig() {
     },
 
     plugins: [
+      replace({
+        DEV: JSON.stringify(!production),
+        PROD: JSON.stringify(production)
+      }),
+
       svelte({
         dev: !production
       }),
@@ -32,6 +37,8 @@ async function getConfig() {
 
       commonjs(),
 
+      watchAssets({ assets: ['src/index.html', 'src/assets/*', 'src/assets/**/*'] }),
+
       copy({
         targets: [
           { src: 'src/index.html', dest: 'public' },
@@ -41,12 +48,11 @@ async function getConfig() {
 
       !production && serve(),
 
-      !production &&
-        livereload({
-          name: 'public',
-          port: await getPort(),
-          exclusions: ['./rollup.config.js']
-        }),
+      !production && livereload({
+        name: 'public',
+        port: await getPort(),
+        exclusions: ['./rollup.config.js']
+      }),
 
       production && terser()
     ],
