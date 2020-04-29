@@ -1,0 +1,15 @@
+{
+    "plugins": [
+        "prettier-plugin-svelte"
+    ],
+    "svelteStrictMode": true,
+    "svelteBracketNewLine": true,
+    "singleQuote": true,
+    "semi": true,
+    "tabWidth": 4,
+    "trailingComma": "es5",
+    "printWidth": 120,
+    "quoteProps": "as-needed",
+    "bracketSpacing": true,
+    "arrowParens": "always"
+}

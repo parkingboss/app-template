@@ -1,3 +1,1 @@
-<main>
-  It lives!
-</main>
+<main>It lives!</main>
