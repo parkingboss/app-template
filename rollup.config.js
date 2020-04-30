@@ -39,7 +39,6 @@ async function getConfig() {
             }),
 
             resolve({
-                browser: true,
                 dedupe: (importee) => importee === 'svelte' || importee.startsWith('svelte/'),
             }),
 
