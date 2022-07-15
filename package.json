@@ -33,7 +33,7 @@
     "npm-run-all": "^4.1.5",
     "sass": "^1.26.5",
     "sirv-cli": "^1.0.0-next.2",
-    "svelte": "^3.21.0"
+    "svelte": "^3.49.0"
   },
   "dependencies": {}
 }
